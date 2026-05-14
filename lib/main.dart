@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'theme.dart';
-import 'signup_page.dart';
+import 'package:chat_app/theme/app_theme.dart';
+import 'package:chat_app/signup_page.dart';
 
 void main() {
   runApp(const MyApp());

@@ -1,74 +1,102 @@
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF128C7E), Color(0xFF25D366)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+import 'package:flutter/material.dart';
+
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
+
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+
+  bool isLoading = false;
+
+  void signup() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      // Fake delay (replace with Firebase later)
+      await Future.delayed(const Duration(seconds: 2));
+
+      if (emailController.text.isEmpty ||
+          passwordController.text.isEmpty ||
+          nameController.text.isEmpty) {
+        throw Exception("All fields are required");
+      }
+
+      // Navigate after signup
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Signup Successful")),
+        );
+      }
+
+      // TODO: Navigate to home page later
+      // Navigator.pushReplacement(...);
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Signup"),
       ),
-
-      child: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-
-              const Icon(
-                Icons.chat_bubble,
-                size: 80,
-                color: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                labelText: "Name",
               ),
+            ),
+            const SizedBox(height: 12),
 
-              const SizedBox(height: 20),
-
-              const Text(
-                "Create Account",
-                style: TextStyle(
-                  fontSize: 28,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+            TextField(
+              controller: emailController,
+              decoration: const InputDecoration(
+                labelText: "Email",
               ),
+            ),
+            const SizedBox(height: 12),
 
-              const SizedBox(height: 30),
-
-              TextField(
-                controller: email,
-                decoration: const InputDecoration(
-                  hintText: "Email",
-                  prefixIcon: Icon(Icons.email),
-                ),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: "Password",
               ),
+            ),
+            const SizedBox(height: 20),
 
-              const SizedBox(height: 15),
-
-              TextField(
-                controller: password,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  hintText: "Password",
-                  prefixIcon: Icon(Icons.lock),
-                ),
-              ),
-
-              const SizedBox(height: 25),
-
-              SizedBox(
-                width: double.infinity,
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : signup,
                 child: isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : ElevatedButton(
-                  onPressed: signup,
-                  child: const Text("SIGN UP"),
-                ),
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text("Signup"),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    ),
-  );
+    );
+  }
 }
