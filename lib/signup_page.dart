@@ -1,144 +1,74 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'chat_page.dart';
-
-class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
-
-  @override
-  State<SignupPage> createState() => _SignupPageState();
-}
-
-class _SignupPageState extends State<SignupPage> {
-
-  final TextEditingController email = TextEditingController();
-  final TextEditingController password = TextEditingController();
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  bool isLoading = false;
-
-  Future<void> signup() async {
-
-    if (email.text.isEmpty || password.text.isEmpty) {
-      showError("Please fill all fields");
-      return;
-    }
-
-    try {
-
-      setState(() {
-        isLoading = true;
-      });
-
-      final result = await _auth.createUserWithEmailAndPassword(
-        email: email.text.trim(),
-        password: password.text.trim(),
-      );
-
-      print("USER CREATED: ${result.user?.uid}");
-
-      if (!mounted) return;
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const ChatPage(),
-        ),
-      );
-
-    } on FirebaseAuthException catch (e) {
-
-      print("ERROR CODE: ${e.code}");
-      print("ERROR MESSAGE: ${e.message}");
-
-      showError(e.message ?? "Signup failed");
-
-    } catch (e) {
-
-      print("GENERAL ERROR: $e");
-
-      showError(e.toString());
-
-    } finally {
-
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    }
-  }
-
-  void showError(String msg) {
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    email.dispose();
-    password.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Signup"),
-      ),
-
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-
-          children: [
-
-            TextField(
-              controller: email,
-              keyboardType: TextInputType.emailAddress,
-
-              decoration: const InputDecoration(
-                labelText: "Email",
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            const SizedBox(height: 15),
-
-            TextField(
-              controller: password,
-              obscureText: true,
-
-              decoration: const InputDecoration(
-                labelText: "Password",
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            isLoading
-                ? const CircularProgressIndicator()
-                : SizedBox(
-              width: double.infinity,
-
-              child: ElevatedButton(
-                onPressed: signup,
-                child: const Text("Create Account"),
-              ),
-            ),
-          ],
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: Container(
+      padding: const EdgeInsets.all(20),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF128C7E), Color(0xFF25D366)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
       ),
-    );
-  }
+
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+
+              const Icon(
+                Icons.chat_bubble,
+                size: 80,
+                color: Colors.white,
+              ),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                "Create Account",
+                style: TextStyle(
+                  fontSize: 28,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              TextField(
+                controller: email,
+                decoration: const InputDecoration(
+                  hintText: "Email",
+                  prefixIcon: Icon(Icons.email),
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+              TextField(
+                controller: password,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  hintText: "Password",
+                  prefixIcon: Icon(Icons.lock),
+                ),
+              ),
+
+              const SizedBox(height: 25),
+
+              SizedBox(
+                width: double.infinity,
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ElevatedButton(
+                  onPressed: signup,
+                  child: const Text("SIGN UP"),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
